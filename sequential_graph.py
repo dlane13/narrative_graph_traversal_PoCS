@@ -7,8 +7,7 @@ from utils import preprocess_corpus #The nltk stuff is in here
 sequential_graph.py
 
 I started simple here, with a graph that followed narrative flow and weighted similar recurrences. 
-I might still keep that for early-on summarizing, but now Im moving towards subgraphs of sentences. I'm hoping
-to weight the sentences from an frequency rank initially calculated from the whole text after preprocessing (stop words removed). 
+ 
 
 """
 
@@ -17,11 +16,6 @@ ugly_duck_raw = 'ugly_duckling.txt'
 
 #get the cleaned tokens as well as the tokens by sentence
 clean_tokens = preprocess_corpus(ugly_duck_raw, sentences=False)
-sent_tokens = preprocess_corpus(ugly_duck_raw, sentences=True)
-
-
-#Construct a graph for each sentence
-
 
 #Construct the graph
 graph = nx.DiGraph()
@@ -58,7 +52,9 @@ for word, val in top_in:
 plt.hist(in_vals)
 plt.show()
 
-#Find the out
+
+#Out-degree reflects in-degree
+""" #Find the out
 out_degree = dict(graph.out_degree(weight='weight'))
 #list the outs for each word
 in_vals = list(out_degree.values())
@@ -68,4 +64,4 @@ print("\nTop words by out-degree:")
 for word, val in top_out:
     print(f"{word:15s} {val}")
 plt.hist(in_vals)
-plt.show()
+plt.show() """
