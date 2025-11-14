@@ -56,4 +56,37 @@ def preprocess_corpus(txt_file, sentences=False):
         clean_tokens =clean_tokens_helper(tokens)
         return clean_tokens
 
-        
+def rank_freq(all_tokens):
+    """  
+    Calculates global (story-level) zipf-related values as a set of dictionaries: 
+    token_freqs: Frequency of each unique token, as token:frequency
+    token_ranks: Rank of each token, based on ordered frequencies (rank 1 = highest freq, ties allowed). as token:rank
+    rank_freq: Frequency of each rank, as rank:frequency
+    """
+    #Initialize dicitonaries
+    token_freqs = {} 
+    token_ranks = {} 
+    rank_freq = {} 
+    
+    for token in all_tokens:
+        token_lower = token.lower()
+        #if the word has been recorded, add 1, if not, add it
+        if token_lower in token_freqs.keys():
+            token_freqs[token_lower] += 1
+        else:
+            token_freqs[token_lower] = 1
+
+    #token ranks - sort the dict by frequency
+    sorted_freqs = sorted(token_freqs.items(), key=lambda x: x[1], reverse=True)
+
+    
+    counter = 1
+    for token, freq in sorted_freqs:
+        if freq not in rank_freq.values():
+            rank_freq[counter] = freq
+            token_ranks[token] = counter
+            counter +=1
+        else:
+            token_ranks[token] = counter - 1
+    return token_freqs, token_ranks, rank_freq
+    

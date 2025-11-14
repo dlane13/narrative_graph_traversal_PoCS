@@ -1,0 +1,72 @@
+
+import networkx as nx
+import matplotlib.pyplot as plt
+import numpy as np
+from itertools import combinations
+from utils import preprocess_corpus, rank_freq #The nltk stuff is in here
+
+""" 
+Creating a Network of sentences, where each node contains a sub-network representing the sentence. 
+Weights within the sentence subnetwork are weighted from a global zipf distribution measurment.
+"""
+
+ugly_duckling_raw = 'ugly_duckling.txt'
+
+"""  ----------------------------------------------------------
+Story-level Zipf, after preprocessing
+----------------------------------------------------------""" 
+#Get the list of tokens after removing stop words
+all_tokens = preprocess_corpus(ugly_duckling_raw, sentences=False)
+
+#Make a dictionary of frequencies
+token_freqs, token_ranks,rank_frequencies = rank_freq(all_tokens)
+
+N_RANKS = len(token_ranks.values())
+
+plt.scatter(np.log10(np.array(list(rank_frequencies.keys()))), np.log10(np.array(list(rank_frequencies.values()))))
+plt.show()
+
+"""----------------------------------------------------------
+Create sentence subgraphs from sentence tokens
+----------------------------------------------------------""" 
+
+sent_tokens = preprocess_corpus(ugly_duckling_raw, sentences = True)
+#list to hold all of the sentence sub-graphs
+sent_graphs = []
+
+def subgraph_edge_weights(sentence, i, j, token_ranks, N_RANKS):
+    #get the tokens from the index
+    token1 = sentence[i]
+    token2 = sentence[j]
+    #get the ranks for the tokens
+    token1_rank = token_ranks[token1]
+    token2_rank = token_ranks[token2]
+    # normalize them
+    R_norm_1 = token1_rank/N_RANKS
+    R_norm_2 = token2_rank/N_RANKS
+
+    #Normalized sentence distance
+    sentence_dist = (j-i)/len(sentence)
+    return 
+
+
+#loop through the sentences
+for sentence in sent_tokens:
+    #make a graph for each
+    subgraph = nx.Graph()
+    #undirected, fully connected graph of nodes from sentence tokens
+    subgraph.add_nodes_from(sentence)
+    #add all edges
+    for i,j in combinations(range(len(sentence)), 2):
+        #weight = 
+        subgraph.add_edge(sentence[i],sentence[j])
+
+
+        
+
+
+        
+
+
+
+
