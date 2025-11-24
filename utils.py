@@ -1,6 +1,9 @@
 import nltk
 import re
 import string
+import pwlf
+import numpy as np
+from scipy.optimize import minimize
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
 
@@ -108,3 +111,25 @@ def temporal_frequency(token: str, all_sentences: list) -> list[int] :
     
     return token_freqs
 
+def optimal_break_linear_regression(x: np.array, y: np.array) -> list:
+    my_pwlf = pwlf.PiecewiseLinFit(x, y)
+
+    number_of_line_segments = 2
+    my_pwlf.use_custom_opt(number_of_line_segments)
+
+    xGuess = np.zeros(number_of_line_segments - 1)
+    xGuess[0] = 0.3
+
+    res = minimize(my_pwlf.fit_with_breaks_opt, xGuess)
+
+    x0 = np.zeros(number_of_line_segments + 1)
+    x0[0] = np.min(x)
+    x0[-1] = np.max(x)
+    x0[1:-1] = res.x
+
+    my_pwlf.fit_with_breaks(x0)
+
+    xHat = np.linspace(min(x), max(x), num=10000)
+    yHat = my_pwlf.predict(xHat)
+
+    return [xHat, yHat]
