@@ -11,13 +11,13 @@ Creating a Network of sentences, where each node contains a sub-network represen
 Weights within the sentence subnetwork are weighted from a global zipf distribution measurment.
 """
 
-ugly_duckling_raw = 'fir_tree.txt'
+story_raw = 'ugly_duckling.txt'
 
 """  ----------------------------------------------------------
 Story-level Zipf, after preprocessing
 ----------------------------------------------------------""" 
 #Get the list of tokens after removing stop words
-all_tokens = preprocess_corpus(ugly_duckling_raw, sentences=False)
+all_tokens = preprocess_corpus(story_raw, sentences=False)
 
 #Make a dictionary of frequencies
 token_freqs, token_ranks,rank_frequencies = rank_freq(all_tokens)
@@ -38,14 +38,55 @@ fit = pwlf.PiecewiseLinFit(X,Y)
 res = fit.fit(2)
 #get the transition point
 break_point = res[1]
-#Make it not the log
-nonlog_breakpoint = np.floor(10**break_point)
+#Make it in terms of rank
+rank_breakpoint = np.floor(10**break_point)
 
+#Print it to visualize where the split is
 plt.scatter(np.log10(np.array(list(rank_frequencies.keys()))), np.log10(np.array(list(rank_frequencies.values()))))
 plt.axvline(x=break_point, color='red')
 plt.xlabel('Log10(Rank)')
 plt.ylabel('Log10(Frequency)')
-plt.title("Rank-frequency Plot for Non-stop-tokens in 'The Fir Tree'")
+plt.title(f"Rank-frequency Plot for Non-stop-tokens in '{story_raw}', with calculated knee point")
+plt.show()
+
+"""  ----------------------------------------------------------
+Split the words on each side of the division
+----------------------------------------------------------""" 
+#our two categories of words
+content_bearing_tokens = {} #token:rank
+content_modifying_tokens = {} #token:rank
+
+#Loop through the tokens and sort them
+for token, rank in token_ranks.items():
+    if rank < rank_breakpoint:
+        content_bearing_tokens[token] = rank
+    elif rank >= rank_breakpoint:
+        content_modifying_tokens[token] = rank
+
+print("Content Bearing Total:")
+print(len(content_bearing_tokens))
+print("Content Modifying Total:")
+print(len(content_modifying_tokens))
+
+#----------------------------------------------------------
+# Visualize sentence content by word type
+#---------------------------------------------------------- 
+#Get the sentences (list of lists, from our utils file)
+sent_tokens = preprocess_corpus(story_raw, sentences = True)
+
+#Get the proportion of words in each sentence that are content-bearing
+sent_pct_content_bearing = []
+for sent_list in sent_tokens:
+    total_count = len(sent_list)
+    content_bearing_count = 0
+    for token in sent_list:
+        if token in content_bearing_tokens.keys():
+            content_bearing_count +=1 
+    
+    sent_pct_content_bearing.append(content_bearing_count/total_count)
+
+plt.bar(range(1, len(sent_pct_content_bearing)+1), sent_pct_content_bearing)
+plt.title(f"Percentage content-bearing for {story_raw}")
 plt.show()
 
 
@@ -58,15 +99,7 @@ plt.show()
 
 
 
-
-""" ----------------------------------------------------------
-#Create sentence subgraphs from sentence tokens
-#---------------------------------------------------------- 
-
-sent_tokens = preprocess_corpus(ugly_duckling_raw, sentences = True)
-#list to hold all of the sentence sub-graphs
-sent_graphs = []
-
+"""
 def subgraph_edge_weights(sentence, i, j, token_ranks, N_RANKS):
     #get the tokens from the index
     token1 = sentence[i]
