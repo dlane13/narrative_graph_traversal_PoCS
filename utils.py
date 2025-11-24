@@ -90,3 +90,27 @@ def rank_freq(all_tokens):
             token_ranks[token] = counter - 1
     return token_freqs, token_ranks, rank_freq
     
+def temporal_frequency(token: str, all_sentences: list) -> list[int] :
+    #iterate through each sentence one at a time
+    #check how many times a token appears in that sentence, store in list
+    #return list once all sentences have been iterated through
+    token_freqs = [0] * len(all_sentences)
+
+    index = 0
+    for sentence in all_sentences:
+        sentence = re.sub(r'\s+', ' ', sentence)
+
+        sentence = sentence.lower().strip()
+        sentence.replace("\n", " ")
+
+        tokens = word_tokenize(sentence)
+        clean_tokens = clean_tokens_helper(tokens)
+
+        for t in tokens:
+            if t == token:
+                token_freqs[index] += 1
+        
+        index += 1
+    
+    return token_freqs
+
