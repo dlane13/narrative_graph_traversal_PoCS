@@ -100,15 +100,7 @@ def temporal_frequency(token: str, all_sentences: list) -> list[int] :
 
     index = 0
     for sentence in all_sentences:
-        sentence = re.sub(r'\s+', ' ', sentence)
-
-        sentence = sentence.lower().strip()
-        sentence.replace("\n", " ")
-
-        tokens = word_tokenize(sentence)
-        clean_tokens = clean_tokens_helper(tokens)
-
-        for t in tokens:
+        for t in sentence:
             if t == token:
                 token_freqs[index] += 1
         
