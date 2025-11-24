@@ -42,8 +42,10 @@ def preprocess_corpus(txt_file, sentences=False):
         for sentence in sent_tokens:
             #tokenize it
             tokens = word_tokenize(sentence)
-            #remove stop words and whatnot
-            clean_sentences.append(clean_tokens_helper(tokens))
+            #remove stop words and whatnot - omit empty sentences
+            clean = clean_tokens_helper(tokens)
+            if len(clean) != 0:
+                clean_sentences.append(clean)
         return clean_sentences
 
     else:
