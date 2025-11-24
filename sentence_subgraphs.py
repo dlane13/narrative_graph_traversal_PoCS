@@ -4,13 +4,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 from itertools import combinations
 from utils import preprocess_corpus, rank_freq #The nltk stuff is in here
+import pwlf
 
 """ 
 Creating a Network of sentences, where each node contains a sub-network representing the sentence. 
 Weights within the sentence subnetwork are weighted from a global zipf distribution measurment.
 """
 
-ugly_duckling_raw = 'ugly_duckling.txt'
+ugly_duckling_raw = 'fir_tree.txt'
 
 """  ----------------------------------------------------------
 Story-level Zipf, after preprocessing
@@ -20,15 +21,47 @@ all_tokens = preprocess_corpus(ugly_duckling_raw, sentences=False)
 
 #Make a dictionary of frequencies
 token_freqs, token_ranks,rank_frequencies = rank_freq(all_tokens)
-
 N_RANKS = len(token_ranks.values())
 
+
+
+"""  ----------------------------------------------------------
+Find rank where change in scaling occurs
+----------------------------------------------------------""" 
+#Piecewise linear fit to find the breakpoint:
+X = np.log10(np.array(list(rank_frequencies.keys())))
+Y = np.log10(np.array(list(rank_frequencies.values())))
+
+#run pwlf
+fit = pwlf.PiecewiseLinFit(X,Y)
+#Best fit of two lines to find breakpoint
+res = fit.fit(2)
+#get the transition point
+break_point = res[1]
+#Make it not the log
+nonlog_breakpoint = np.floor(10**break_point)
+
 plt.scatter(np.log10(np.array(list(rank_frequencies.keys()))), np.log10(np.array(list(rank_frequencies.values()))))
+plt.axvline(x=break_point, color='red')
+plt.xlabel('Log10(Rank)')
+plt.ylabel('Log10(Frequency)')
+plt.title("Rank-frequency Plot for Non-stop-tokens in 'The Fir Tree'")
 plt.show()
 
-"""----------------------------------------------------------
-Create sentence subgraphs from sentence tokens
-----------------------------------------------------------""" 
+
+
+
+
+
+
+
+
+
+
+
+""" ----------------------------------------------------------
+#Create sentence subgraphs from sentence tokens
+#---------------------------------------------------------- 
 
 sent_tokens = preprocess_corpus(ugly_duckling_raw, sentences = True)
 #list to hold all of the sentence sub-graphs
@@ -59,7 +92,8 @@ for sentence in sent_tokens:
     #add all edges
     for i,j in combinations(range(len(sentence)), 2):
         #weight = 
-        subgraph.add_edge(sentence[i],sentence[j])
+        subgraph.add_edge(sentence[i],sentence[j]) """
+
 
 
         
