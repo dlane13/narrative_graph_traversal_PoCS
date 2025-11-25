@@ -6,6 +6,9 @@ import numpy as np
 from scipy.optimize import minimize
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
+import numpy as np
+import matplotlib.pyplot as plt
+import pwlf
 
 """  
 Function to preprocess a given corpus. Can be set to return sentences or just a straight flow of tokens, all will have stop words and unnecessary punctuation removed
@@ -60,6 +63,22 @@ def preprocess_corpus(txt_file, sentences=False):
         tokens = word_tokenize(text)
         clean_tokens =clean_tokens_helper(tokens)
         return clean_tokens
+    
+def find_breakpoint(rank_frequencies):
+    #Piecewise linear fit to find the breakpoint:
+    X = np.log10(np.array(list(rank_frequencies.keys())))
+    Y = np.log10(np.array(list(rank_frequencies.values())))
+
+    #run pwlf
+    fit = pwlf.PiecewiseLinFit(X,Y)
+    #Best fit of two lines to find breakpoint
+    res = fit.fit(2)
+    #get the transition point
+    break_point = res[1]
+    #Make it in terms of rank
+    rank_breakpoint = np.floor(10**break_point)
+    
+    return rank_breakpoint
 
 def rank_freq(all_tokens):
     """  
@@ -93,7 +112,10 @@ def rank_freq(all_tokens):
             counter +=1
         else:
             token_ranks[token] = counter - 1
-    return token_freqs, token_ranks, rank_freq
+    
+    rank_breakpoint = find_breakpoint(rank_freq)
+        
+    return token_freqs, token_ranks, rank_freq, rank_breakpoint
     
 def temporal_frequency(token: str, all_sentences: list) -> list[int] :
     #iterate through each sentence one at a time
