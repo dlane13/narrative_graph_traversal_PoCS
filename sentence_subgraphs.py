@@ -20,7 +20,7 @@ Story-level Zipf, after preprocessing
 all_tokens = preprocess_corpus(story_raw, sentences=False)
 
 #Make a dictionary of frequencies
-token_freqs, token_ranks,rank_frequencies = rank_freq(all_tokens)
+token_freqs, token_ranks,rank_frequencies, rank_breakpoint = rank_freq(all_tokens)
 N_RANKS = len(token_ranks.values())
 
 
@@ -32,18 +32,9 @@ Find rank where change in scaling occurs
 X = np.log10(np.array(list(rank_frequencies.keys())))
 Y = np.log10(np.array(list(rank_frequencies.values())))
 
-#run pwlf
-fit = pwlf.PiecewiseLinFit(X,Y)
-#Best fit of two lines to find breakpoint
-res = fit.fit(2)
-#get the transition point
-break_point = res[1]
-#Make it in terms of rank
-rank_breakpoint = np.floor(10**break_point)
-
 #Print it to visualize where the split is
-plt.scatter(np.log10(np.array(list(rank_frequencies.keys()))), np.log10(np.array(list(rank_frequencies.values()))))
-plt.axvline(x=break_point, color='red')
+plt.scatter(X, Y)
+plt.axvline(x=np.log10(rank_breakpoint), color='red')
 plt.xlabel('Log10(Rank)')
 plt.ylabel('Log10(Frequency)')
 plt.title(f"Rank-frequency Plot for Non-stop-tokens in '{story_raw}', with calculated knee point")
@@ -68,6 +59,9 @@ print(len(content_bearing_tokens))
 print("Content Modifying Total:")
 print(len(content_modifying_tokens))
 
+print(content_bearing_tokens.keys())
+
+
 #----------------------------------------------------------
 # Visualize sentence content by word type
 #---------------------------------------------------------- 
@@ -88,13 +82,6 @@ for sent_list in sent_tokens:
 plt.bar(range(1, len(sent_pct_content_bearing)+1), sent_pct_content_bearing)
 plt.title(f"Percentage content-bearing for {story_raw}")
 plt.show()
-
-
-
-
-
-
-
 
 
 
