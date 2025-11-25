@@ -77,4 +77,4 @@ def draw_graph(graph, title="Co-occurrence undirected graph"):
     plt.title(title)
     plt.show()
 
-draw_graph(G, "Undirected Co-occurrence Graph")
+draw_graph(, "Undirected Co-occurrence Graph")
