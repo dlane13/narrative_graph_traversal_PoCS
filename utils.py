@@ -103,7 +103,6 @@ def rank_freq(all_tokens):
     #token ranks - sort the dict by frequency
     sorted_freqs = sorted(token_freqs.items(), key=lambda x: x[1], reverse=True)
 
-    
     counter = 1
     for token, freq in sorted_freqs:
         if freq not in rank_freq.values():
@@ -155,3 +154,12 @@ def optimal_break_linear_regression(x: np.array, y: np.array) -> list:
     yHat = my_pwlf.predict(xHat)
 
     return [xHat, yHat]
+
+def average_temporal_frequency(list_of_lists : np.array) -> np.array:
+    og = list_of_lists[0]
+    for list in range(1, len(list_of_lists)):
+        og = og + list_of_lists[list]
+
+    og = og / max(og)
+
+    return og

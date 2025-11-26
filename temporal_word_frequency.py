@@ -9,6 +9,7 @@ from utils import temporal_frequency
 from utils import rank_freq
 import utils
 import matplotlib.pyplot as plt
+import numpy as np
 
 #this returns a list of lowercased, whitespace-free words
 processed_ugly_duckling = preprocess_corpus('ugly_duckling.txt')
@@ -86,7 +87,29 @@ def average_freq():
     content_bearing_tokens = [key for key, value in sorted_token_ranks.items() if value < rank_breakpoint]
     action_driving_tokens = [key for key, value in sorted_token_ranks.items() if value >= rank_breakpoint]
 
+    cb_temp_freq = []
+    for token in content_bearing_tokens:
+        cb_temp_freq.append(np.array(temporal_frequency(token, processed_sentences)))
+
+    cb_avg_freq = utils.average_temporal_frequency(cb_temp_freq)
+
+    ab_temp_freq = []
+    for token in action_driving_tokens:
+        ab_temp_freq.append(np.array(temporal_frequency(token, processed_sentences)))
+
+    ab_avg_freq = utils.average_temporal_frequency(ab_temp_freq)
+
+    fig, axs = plt.subplots(2,1)
     
+    axs[0].plot(range(len_token_list), cb_avg_freq)
+    axs[0].set_title("Average Content-Bearing Frequency")
+
+    axs[1].plot(range(len_token_list), ab_avg_freq)
+    axs[1].set_title("Average Action-Driving Frequency")
+
+    plt.subplots_adjust(hspace=0.5)
+
+    plt.show()
 
 
-two_cb_two_ab()
+average_freq()
