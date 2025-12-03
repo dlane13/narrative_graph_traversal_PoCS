@@ -12,8 +12,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 #this returns a list of lowercased, whitespace-free words
-processed_ugly_duckling = preprocess_corpus('ugly_duckling.txt')
-processed_sentences = preprocess_corpus('ugly_duckling.txt', True)
+processed_ugly_duckling = preprocess_corpus('fir_tree.txt')
+processed_sentences = preprocess_corpus('fir_tree.txt', True)
 
 #first: choose four random words
 def random_four():
