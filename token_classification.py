@@ -10,17 +10,17 @@ import pwlf
 Creating a Network of sentences, where each node contains a sub-network representing the sentence. 
 Weights within the sentence subnetwork are weighted from a global zipf distribution measurment.
 """
-
+story_paths = ['ugly_duckling.txt','fir_tree.txt',]
 story_raw = 'ugly_duckling.txt'
 
 """  ----------------------------------------------------------
 Story-level Zipf, after preprocessing
 ----------------------------------------------------------""" 
 #Get the list of tokens after removing stop words
-all_tokens = preprocess_corpus(story_raw, sentences=False)
+all_tokens = preprocess_corpus(story_raw, keep_stopwords=True, sentences=False)
 
 #Make a dictionary of frequencies
-token_freqs, token_ranks,rank_frequencies, rank_breakpoint = rank_freq(all_tokens)
+token_freqs, token_ranks,rank_frequencies, rank_breakpoint = rank_freq(all_tokens) #here we have "ranked frequencies" not "rank frequencies"
 N_RANKS = len(token_ranks.values())
 
 
@@ -28,6 +28,20 @@ N_RANKS = len(token_ranks.values())
 """  ----------------------------------------------------------
 Find rank where change in scaling occurs
 ----------------------------------------------------------""" 
+#plot like traditional zipf first
+sorted_token_freqs = sorted(token_freqs.items(), key=lambda x: x[1], reverse=True)
+ranks = range(1, len(sorted_token_freqs)+1)
+freqs = [freq for token, freq in sorted_token_freqs]
+X1 = np.log10(np.array(ranks)) #frequencies
+Y1 = np.log10(np.array(freqs)) #ranks
+#Print it to visualize where the split is
+plt.scatter(X1, Y1)
+plt.axvline(x=np.log10(rank_breakpoint), color='red')
+plt.xlabel('Log10(Rank)')
+plt.ylabel('Log10(Frequency)')
+plt.title(f"Zipf Rank-frequency Plot for Non-stop-tokens in '{story_raw}', with calculated knee point, n={len(ranks)+1}")
+plt.show()
+
 #Piecewise linear fit to find the breakpoint:
 X = np.log10(np.array(list(rank_frequencies.keys())))
 Y = np.log10(np.array(list(rank_frequencies.values())))
@@ -37,7 +51,7 @@ plt.scatter(X, Y)
 plt.axvline(x=np.log10(rank_breakpoint), color='red')
 plt.xlabel('Log10(Rank)')
 plt.ylabel('Log10(Frequency)')
-plt.title(f"Rank-frequency Plot for Non-stop-tokens in '{story_raw}', with calculated knee point")
+plt.title(f"Binned Rank-frequency Plot for Non-stop-tokens in '{story_raw}', with calculated knee point, n={len(rank_frequencies.keys())+1}")
 plt.show()
 
 """  ----------------------------------------------------------
