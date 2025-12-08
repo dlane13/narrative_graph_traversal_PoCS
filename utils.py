@@ -155,6 +155,7 @@ def optimal_break_linear_regression(x: np.array, y: np.array) -> list:
 
     return [xHat, yHat]
 
+<<<<<<< HEAD
 def average_temporal_frequency(list_of_lists : np.array) -> np.array:
     og = list_of_lists[0]
     for list in range(1, len(list_of_lists)):
@@ -163,3 +164,5 @@ def average_temporal_frequency(list_of_lists : np.array) -> np.array:
     og = og / max(og)
 
     return og
+=======
+>>>>>>> 6a76d5b (for pull)
