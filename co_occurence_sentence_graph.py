@@ -11,7 +11,8 @@ This script builds a directed co-occurrence graph where an edge (u -> v) exists 
 
 """
 
-ugly_duck_raw = 'ugly_duckling.txt'
+ugly_duck_raw = 'fairy_tales_texts/the_emperors_new_suit.txt'
+title = "The Emperor's New Suit"
 
 #get the cleaned tokens as well as the tokens by sentence
 #clean_tokens = preprocess_corpus(ugly_duck_raw, sentences=False)
@@ -83,4 +84,8 @@ nx.draw(
     arrowsize=15,
     connectionstyle='arc3, rad = 0.1' 
 )
+
+average_clustering = nx.average_clustering(graph, graph.nodes())
+print(f"Average clustering for 'The Ugly Duckling': {average_clustering}")
+
 plt.show()

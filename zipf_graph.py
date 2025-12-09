@@ -5,7 +5,7 @@ import networkx as nx
 import utils
 import matplotlib.pyplot as plt
 
-ugly_duck_raw = 'ugly_duckling.txt'
+ugly_duck_raw = 'fairy_tales_texts/ugly_duckling.txt'
 processed_ugly_duckling = utils.preprocess_corpus(ugly_duck_raw)
 processed_sentences = utils.preprocess_corpus(ugly_duck_raw, True)
 
@@ -59,7 +59,7 @@ def build_zipf_edges_graph(processed_sentences, proximity_window):
     return G
 
 def draw_graph():
-    G = build_zipf_edges_graph(processed_sentences, 3)
+    G = build_zipf_edges_graph(processed_sentences, 2)
 
     ### Drawing graph
     plt.figure(figsize=(8, 8))

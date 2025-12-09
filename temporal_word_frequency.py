@@ -12,8 +12,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 #this returns a list of lowercased, whitespace-free words
-processed_ugly_duckling = preprocess_corpus('fir_tree.txt')
-processed_sentences = preprocess_corpus('fir_tree.txt', True)
+title = "The Fir Tree"
+path = "fairy_tales_texts/fir_tree.txt"
+processed_ugly_duckling = preprocess_corpus(path)
+processed_sentences = preprocess_corpus(path, True)
 
 #first: choose four random words
 def random_four():
@@ -105,9 +107,11 @@ def average_freq():
     axs[0].set_title("Average Content-Bearing Frequency")
 
     axs[1].plot(range(len_token_list), ab_avg_freq)
-    axs[1].set_title("Average Action-Driving Frequency")
+    axs[1].set_title("Average Content-Modifying Frequency")
 
     plt.subplots_adjust(hspace=0.5)
+
+    fig.suptitle(f"{title}", fontweight='bold', fontsize=16)
 
     plt.show()
 
