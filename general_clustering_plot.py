@@ -15,7 +15,6 @@ def measure(function1, function2, processed_text):
 target_directory = Path('fairy_tales_texts/')
 metrics = {}
 for story in target_directory.glob('*.txt'):
-    print(story)
     processed_text = preprocess_corpus(story, sentences=True)
     #change these to any two metrics
     metric1 = nx.average_clustering
