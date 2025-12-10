@@ -20,6 +20,11 @@ def process_sentences(filename):
         text = f.read()
 
     sentences = nltk.sent_tokenize(text)
+    
+    sentences = [s.strip() for s in sentences]
+    #remove duplicate sentences 
+    sentences = list(dict.fromkeys(sentences))
+    
     print(f"We have sucessfully tokenized {len(sentences)} sentences.")
     return sentences
 
@@ -74,14 +79,41 @@ def draw_graph(G):
     plt.show()    
     print("Drawing Sentence similarity graph (TF–IDF)")
 
+def check_sentence_coherence(G, sentences, top_k=5):
+    print("Top sentence–sentence similarities")
+    edges = [
+        (u, v, data["weight"])
+        for u, v, data in G.edges(data=True)
+    ]
+    # Sort by descending similarity
+    edges_sorted = sorted(edges, key=lambda x: x[2], reverse=True)
+
+    # Print top-k most similar pairs
+    for i, (s1, s2, w) in enumerate(edges_sorted[:top_k]):
+        print(f"\nPair {i+1}: similarity={w:.3f}")
+        print(f" Sentence {s1}:{sentences[s1]}")
+        print(f"  Sentence {s2}: {sentences[s2]}")
+    
+    #Sentence clusters
+    components = list(nx.connected_components(G))
+    meaningful_comp = [comp for comp in components if len(comp) >3] 
+    for idx, comp in enumerate(meaningful_comp):
+        print(f"\nCluster {idx+1} ({len(comp)} sentences):")
+        for node in sorted(comp):
+            print(f"-{sentences[node]}")
+    
+    
 #Main execution 
 if __name__ == "__main__":
-    filename = "ugly_duckling.txt"
+    filename = "fir_tree.txt"
 
     sentences = process_sentences(filename)
     tfidf_matrix = compute_tfidf(sentences)
     sim_matrix = compute_similarity_matrix(tfidf_matrix)
 
-    G = build_graph(sentences, sim_matrix, threshold=0.2)
+    G = build_graph(sentences, sim_matrix, threshold=0.45)
 
     draw_graph(G)
+
+    check_sentence_coherence(G, sentences)
+    
