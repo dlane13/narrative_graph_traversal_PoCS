@@ -40,41 +40,52 @@ print(f"The corpus contains {len(processed_sentences)} clean sentences.")
 print("Building undirected co-occurrence graph") 
 G = build_cooccurrence_graph_undirected(processed_sentences)
 
-# Show 10 strongest edges
+# Show 25 strongest edges
 all_edges = [(u, v, d["weight"]) for u, v, d in G.edges(data=True)]
-top10 = sorted(all_edges, key=itemgetter(2), reverse=True)[:10]
+top25 = sorted(all_edges, key=itemgetter(2), reverse=True)[:25]
 
-print("Top 10 strongest co-occurring word pairs:")
-for u, v, w in top10:
+print("Top 25 strongest co-occurring word pairs:")
+for u, v, w in top25:
     print(f"  '{u}' — '{v}' : weight {w}")
 
 #Draw graph 
-def draw_graph(graph, title="Co-occurrence undirected graph"):
+def draw_graph(graph, title="Co-occurrence undirected graph"):  
+    
     ### Find node influences 
-    pagerank = nx.pagerank(graph, weight='weight')
+    #pagerank = nx.pagerank(graph, weight='weight') - for directed graph
+    centrality = nx.eigenvector_centrality(graph, weight='weight', max_iter=100)
     ### Prepare components- mutliple so that they are easier to see 
-    node_sizes = [pagerank[n] * 15000 for n in graph.nodes()]
+    node_sizes = [centrality[n] * 15000 for n in graph.nodes()]
     edge_weights = [d['weight'] for _, _, d in graph.edges(data=True)]
     edge_widths = [w * 0.75 for w in edge_weights]
-
-    plt.figure(figsize=(12, 12))
-    pos = nx.spring_layout(graph, k=0.4, iterations=20, seed=42)
+    
+    plt.figure(figsize=(16, 16))
+    pos = nx.spring_layout(graph, k=2, iterations=50, seed=42,scale =2.0)
 
     nx.draw(
         graph, pos,
         with_labels=True,
         node_size=node_sizes,
-        node_color=[pagerank[n] for n in graph.nodes()],
-        cmap=plt.cm.cividis,
+        node_color=[centrality[n] for n in graph.nodes()],
+        cmap=plt.cm.viridis,
         edge_color=edge_weights,
         edge_cmap=plt.cm.Blues,
         width=edge_widths,
-        arrows=graph.is_directed(),
-        arrowsize=12,
-        connectionstyle='arc3, rad=0.1'
+        font_size=10,
+        alpha=0.8
     )
 
-    plt.title(title)
+    plt.title(title, fontsize=14)
     plt.show()
 
-draw_graph(G, "Undirected Co-occurrence Graph")
+#Testing 
+G_raw = build_cooccurrence_graph_undirected(processed_sentences)
+draw_graph(G_raw, f"Undirected Co-occurrence Graph")
+
+G_filtered = G_raw.copy()
+min_edge_weight = 3 
+edges_to_remove = [(u, v) for u, v, d in G_filtered.edges(data=True) if d['weight'] < min_edge_weight]
+G_filtered.remove_edges_from(edges_to_remove)
+draw_graph(G_filtered, f"Core Co-occurrence Network (Weight >={min_edge_weight})")
+    
+
