@@ -37,6 +37,10 @@ def build_cooccurrence_graph_undirected(processed_sentences):
         G.add_edge(u, v, weight=w)
     return G
 
+def find_average_clustering(processed_sentences):
+    graph = build_cooccurrence_graph_undirected(processed_sentences)
+    return nx.average_clustering(graph)
+
 processed_sentences = preprocess_corpus(ugly_duck_raw, sentences=True)
 print(f"The corpus contains {len(processed_sentences)} clean sentences.")
 
