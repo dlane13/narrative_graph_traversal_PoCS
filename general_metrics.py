@@ -55,11 +55,19 @@ def plot_metrics_random():
     
     metric1list = [value[0] for value in metrics.values()]
     metric2list = [value[1] for value in metrics.values()]
-    plt.plot(metric1list, metric2list, '.k')
+    plt.plot(metric1list, metric2list, '.b', label="Original Co-Occurrence Graph")
 
     randommetric1list = [value[0] for value in random_metrics.values()]
     randommetric2list = [value[1] for value in random_metrics.values()]
-    plt.plot(randommetric1list, randommetric2list, '.r')
+    plt.plot(randommetric1list, randommetric2list, '.r', label="Random Graph")
+
+    plt.xlim((0, 1))
+    plt.ylim((0, 1))
+
+    plt.xlabel("Average Clustering")
+    plt.ylabel("Transitivity")
+    plt.title("Average Clustering vs. Transitivity for Co-Occurrence and Random Graphs")
+    plt.legend()
 
     plt.show()
 
