@@ -102,7 +102,6 @@ def check_sentence_coherence(G, sentences, top_k=5):
         for node in sorted(comp):
             print(f"-{sentences[node]}")
     
-    
 #Main execution 
 if __name__ == "__main__":
     filename = "fir_tree.txt"
@@ -115,5 +114,5 @@ if __name__ == "__main__":
 
     draw_graph(G)
 
-    check_sentence_coherence(G, sentences)
-    
+    check_sentence_coherence(G, sentences)    
+
